@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "suddenly-351d3.firebasestorage.app",
       },
+       {
+        protocol: "https",
+        hostname: "ecomamit-dfd2f.firebasestorage.app",
+      },
       {
         protocol: "https",
         hostname: "**",
