@@ -13,7 +13,8 @@ import {
     Ticket,
     Mail,
     RotateCcw,
-    Headphones
+    Headphones,
+    Receipt
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -93,6 +94,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </Link>
 
                     <div className="text-[10px] font-sans uppercase tracking-luxury text-muted-foreground px-3 mb-2 mt-6">System</div>
+                    <Link href="/admin/gst-config" className={menuItemClass('/admin/gst-config')}>
+                        <Receipt className="w-4 h-4" />
+                        <span>GST & Tax</span>
+                    </Link>
                     <Link href="/admin/settings" className={menuItemClass('/admin/settings')}>
                         <Settings className="w-4 h-4" />
                         <span>Settings</span>

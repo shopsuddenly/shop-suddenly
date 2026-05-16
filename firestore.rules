@@ -93,6 +93,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Settings collection (GST config, etc.)
+    match /settings/{docId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
     // Pages (CMS) collection
     match /pages/{pageId} {
       allow read: if true;

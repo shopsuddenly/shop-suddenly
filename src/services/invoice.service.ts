@@ -1,120 +1,169 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Order } from '@/types/order';
-import { formatPrice } from "@/lib/utils";
+import { GSTConfig, DEFAULT_GST_CONFIG } from '@/types/gst';
+import { GSTConfigService } from './gst-config.service';
 
 export class InvoiceService {
     /**
-     * Generate invoice number from order ID
+     * Format price to Rs. string (safe for standard PDF fonts)
      */
-    static getInvoiceNumber(orderId: string): string {
-        return `INV-${orderId}`;
+    static formatRs(amount: number): string {
+        return `Rs. ${amount.toFixed(2)}`;
     }
 
     /**
-     * Generate PDF invoice for an order
+     * Generate PDF invoice for an order using dynamic GST config
      */
-    static generateInvoicePDF(order: Order): jsPDF {
-        const doc = new jsPDF();
+    static async generateInvoicePDF(order: Order): Promise<jsPDF> {
+        // Load config from Firestore (falls back to defaults)
+        const config = await GSTConfigService.getConfig();
+        return this.buildPDF(order, config);
+    }
+
+    /**
+     * Build the actual PDF document
+     */
+    static buildPDF(order: Order, config: GSTConfig): jsPDF {
+        const doc = new jsPDF('p', 'mm', 'a4');
         const pageWidth = doc.internal.pageSize.width;
+        const biz = config.businessAddress;
+        const isInclusive = config.defaultTaxType === 'inclusive';
 
-        // Company Header
-        doc.setFontSize(24);
+        // ─── Company Header ───
+        doc.setFontSize(22);
         doc.setFont('helvetica', 'bold');
-        doc.text('INVOICE', pageWidth / 2, 20, { align: 'center' });
+        doc.setTextColor(0, 0, 0);
+        doc.text('shop', 14, 20);
+        doc.setTextColor(255, 153, 0);
+        doc.text('suddenly', 33, 20);
+        doc.setTextColor(0, 0, 0);
 
-        // Invoice Details
-        doc.setFontSize(10);
+        doc.setFontSize(14);
+        doc.text('Tax Invoice/Bill of Supply', pageWidth - 14, 20, { align: 'right' });
+        doc.setFontSize(8);
         doc.setFont('helvetica', 'normal');
-        doc.text(`Invoice #: ${this.getInvoiceNumber(order.id)}`, 14, 35);
-        doc.text(`Order ID: ${order.id}`, 14, 41);
-        doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`, 14, 47);
-        doc.text(`Payment Method: ${order.paymentMethod === 'COD' ? 'Cash on Delivery' : order.paymentMethod}`, 14, 53);
+        doc.text('(Original for Recipient)', pageWidth - 14, 25, { align: 'right' });
 
-        // Billing & Shipping Address
-        doc.setFontSize(11);
+        // ─── Seller Details ───
+        doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
-        doc.text('Ship To:', 14, 65);
-
-        doc.setFontSize(10);
+        doc.text('Sold By:', 14, 35);
         doc.setFont('helvetica', 'normal');
+        doc.text(biz.companyName, 14, 40);
+        doc.text(biz.addressLine1, 14, 45);
+        if (biz.addressLine2) doc.text(biz.addressLine2, 14, 50);
+        const sellerCityY = biz.addressLine2 ? 55 : 50;
+        doc.text(`${biz.city}, ${biz.state} - ${biz.postalCode}`, 14, sellerCityY);
+        doc.text(`GSTIN: ${config.gstin}`, 14, sellerCityY + 5);
+        doc.text(`PAN: ${config.pan}`, 14, sellerCityY + 10);
+
+        // ─── Billing Details ───
         const address = order.addressSnapshot;
-        doc.text(address.name, 14, 71);
-        doc.text(address.addressLine1, 14, 77);
-        if (address.addressLine2) {
-            doc.text(address.addressLine2, 14, 83);
-        }
-        doc.text(`${address.city}, ${address.state} ${address.postalCode}`, 14, address.addressLine2 ? 89 : 83);
-        doc.text(`${address.country}`, 14, address.addressLine2 ? 95 : 89);
-        doc.text(`Phone: ${address.phone}`, 14, address.addressLine2 ? 101 : 95);
+        const isSameState = address.state.toLowerCase() === biz.state.toLowerCase();
 
-        // Order Items Table
-        const tableStartY = address.addressLine2 ? 110 : 104;
-        const items = order.items.map(item => [
-            item.name,
-            item.size || '-',
-            item.quantity.toString(),
-            `$${item.unitPrice.toFixed(2)}`,
-            `$${(item.quantity * item.unitPrice).toFixed(2)}`
-        ]);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Billing/Shipping Address:', pageWidth - 80, 35);
+        doc.setFont('helvetica', 'normal');
+        doc.text(address.name, pageWidth - 80, 40);
+        doc.text(address.addressLine1, pageWidth - 80, 45);
+        if (address.addressLine2) doc.text(address.addressLine2, pageWidth - 80, 50);
+        const buyerCityY = address.addressLine2 ? 55 : 50;
+        doc.text(`${address.city}, ${address.state} ${address.postalCode}`, pageWidth - 80, buyerCityY);
+        doc.text(`Phone: ${address.phone}`, pageWidth - 80, buyerCityY + 5);
 
-        autoTable(doc, {
-            startY: tableStartY,
-            head: [['Item', 'Size', 'Qty', 'Unit Price', 'Total']],
-            body: items,
-            theme: 'striped',
-            headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255] },
-            styles: { fontSize: 9 },
-            columnStyles: {
-                0: { cellWidth: 70 },
-                1: { cellWidth: 20, halign: 'center' },
-                2: { cellWidth: 15, halign: 'center' },
-                3: { cellWidth: 35, halign: 'right' },
-                4: { cellWidth: 35, halign: 'right' }
+        // ─── Divider ───
+        doc.setDrawColor(200, 200, 200);
+        doc.line(14, 70, pageWidth - 14, 70);
+
+        // ─── Order Metadata ───
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`Order No: ${order.id}`, 14, 78);
+        doc.text(`Invoice Date: ${new Date(order.createdAt).toLocaleDateString()}`, pageWidth - 14, 78, { align: 'right' });
+
+        // ─── Items Table ───
+        const tableBody = order.items.map((item, index) => {
+            const gstRate = GSTConfigService.getGSTRate(config.slabs, item.unitPrice);
+
+            let basePrice: number;
+            let taxPerUnit: number;
+
+            if (isInclusive) {
+                // Extract tax from inclusive price
+                basePrice = item.unitPrice / (1 + gstRate / 100);
+                taxPerUnit = item.unitPrice - basePrice;
+            } else {
+                // Add tax on top
+                basePrice = item.unitPrice;
+                taxPerUnit = item.unitPrice * (gstRate / 100);
             }
+
+            const netAmount = basePrice * item.quantity;
+            const taxAmount = taxPerUnit * item.quantity;
+            const totalAmount = (basePrice + taxPerUnit) * item.quantity;
+
+            const taxType = isSameState
+                ? `CGST+SGST (${gstRate}%)`
+                : `IGST (${gstRate}%)`;
+
+            return [
+                index + 1,
+                item.name,
+                this.formatRs(basePrice),
+                item.quantity,
+                this.formatRs(netAmount),
+                `${gstRate}%`,
+                taxType,
+                this.formatRs(taxAmount),
+                this.formatRs(totalAmount),
+            ];
         });
 
-        // Get final Y position after table
+        autoTable(doc, {
+            startY: 85,
+            head: [['#', 'Description', 'Base Price', 'Qty', 'Net Amt', 'Rate', 'Tax Type', 'Tax Amt', 'Total']],
+            body: tableBody,
+            theme: 'grid',
+            headStyles: {
+                fillColor: [240, 240, 240],
+                textColor: [0, 0, 0],
+                fontStyle: 'bold',
+                fontSize: 8,
+            },
+            styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak' },
+            columnStyles: {
+                0: { cellWidth: 8 },
+                1: { cellWidth: 38 },
+                2: { cellWidth: 22, halign: 'right' },
+                3: { cellWidth: 10, halign: 'center' },
+                4: { cellWidth: 22, halign: 'right' },
+                5: { cellWidth: 12, halign: 'center' },
+                6: { cellWidth: 30, halign: 'center' },
+                7: { cellWidth: 20, halign: 'right' },
+                8: { cellWidth: 22, halign: 'right' },
+            },
+        });
+
+        // ─── Grand Total ───
         const finalY = (doc as any).lastAutoTable.finalY + 10;
-
-        // Totals
-        const totalsX = pageWidth - 70;
-        doc.setFontSize(10);
-        doc.text('Subtotal:', totalsX, finalY);
-        doc.text(formatPrice(order.totals.subtotal), pageWidth - 15, finalY, { align: 'right' });
-
-        if (order.totals.discountTotal > 0) {
-            doc.text('Discount:', totalsX, finalY + 6);
-            doc.setTextColor(0, 128, 0);
-            doc.text(`-${formatPrice(order.totals.discountTotal)}`, pageWidth - 15, finalY + 6, { align: 'right' });
-            doc.setTextColor(0, 0, 0);
-        }
-
-        let currentY = order.totals.discountTotal > 0 ? finalY + 12 : finalY + 6;
-        doc.text("Shipping:", pageWidth - 50, currentY, { align: 'right' });
-        doc.text(formatPrice(order.totals.shipping), pageWidth - 15, currentY, { align: 'right' });
-
-        if (order.totals.tax > 0) {
-            doc.text("Tax:", pageWidth - 50, currentY + 6, { align: 'right' });
-            doc.text(formatPrice(order.totals.tax), pageWidth - 15, currentY + 6, { align: 'right' });
-            currentY += 6;
-        }
-
-        // Draw line above total
-        doc.setLineWidth(0.5);
-        doc.line(totalsX, currentY + 8, pageWidth - 15, currentY + 8);
-
-        // Total
-        doc.setFontSize(12);
+        doc.setFontSize(11);
         doc.setFont('helvetica', 'bold');
-        doc.text("Total:", pageWidth - 50, currentY + 15, { align: 'right' });
-        doc.text(formatPrice(order.totals.total), pageWidth - 15, currentY + 15, { align: 'right' });
+        doc.text('Grand Total (Incl. Tax):', pageWidth - 80, finalY);
+        doc.text(this.formatRs(order.totals.total), pageWidth - 14, finalY, { align: 'right' });
 
-        // Footer
+        // ─── Footer ───
         doc.setFontSize(8);
-        doc.setFont('helvetica', 'italic');
-        doc.setTextColor(128, 128, 128);
-        doc.text('Thank you for your business!', pageWidth / 2, doc.internal.pageSize.height - 20, { align: 'center' });
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(100, 100, 100);
+        doc.text('Whether tax is payable under reverse charge: No', 14, finalY + 20);
+        doc.text('This is a computer generated invoice and does not require a signature.', 14, finalY + 25);
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(0, 0, 0);
+        doc.text(`For ${biz.companyName}`, pageWidth - 14, finalY + 40, { align: 'right' });
+        doc.text('Authorized Signatory', pageWidth - 14, finalY + 55, { align: 'right' });
 
         return doc;
     }
@@ -122,17 +171,8 @@ export class InvoiceService {
     /**
      * Download invoice as PDF
      */
-    static downloadInvoice(order: Order): void {
-        const doc = this.generateInvoicePDF(order);
-        const filename = `invoice-${order.id}.pdf`;
-        doc.save(filename);
-    }
-
-    /**
-     * Get invoice as blob for email or other purposes
-     */
-    static getInvoiceBlob(order: Order): Blob {
-        const doc = this.generateInvoicePDF(order);
-        return doc.output('blob');
+    static async downloadInvoice(order: Order): Promise<void> {
+        const doc = await this.generateInvoicePDF(order);
+        doc.save(`invoice-${order.id}.pdf`);
     }
 }

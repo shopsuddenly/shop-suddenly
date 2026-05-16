@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHOPSUDDENLY Invoice</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #e5e5e5;
+            padding: 20px;
+        }
+
+        .invoice-container {
+            width: 210mm;
+            min-height: 297mm;
+            background: #fff;
+            margin: auto;
+            padding: 30px;
+            color: #000;
+        }
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: #ff9900;
+            margin-left: 4px;
+        }
+
+        .invoice-title {
+            text-align: right;
+        }
+
+        .invoice-title h1 {
+            font-size: 34px;
+            margin-bottom: 5px;
+        }
+
+        .invoice-title p {
+            font-size: 20px;
+        }
+
+        .address-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 35px;
+            gap: 40px;
+        }
+
+        .address-box {
+            width: 48%;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        .address-box h3 {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .info-grid {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            font-size: 18px;
+        }
+
+        .info-left,
+        .info-right {
+            width: 48%;
+            line-height: 1.8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+
+        table th {
+            border: 1px solid #000;
+            padding: 12px;
+            font-size: 16px;
+            background: #f2f2f2;
+        }
+
+        table td {
+            border: 1px solid #000;
+            padding: 12px;
+            font-size: 15px;
+            vertical-align: top;
+        }
+
+        .total-row td {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .amount-words {
+            margin-top: 25px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .signature-box {
+            margin-top: 60px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .signature {
+            text-align: center;
+            width: 320px;
+            border-top: 1px solid #000;
+            padding-top: 10px;
+            font-size: 18px;
+        }
+
+        .bottom-info {
+            margin-top: 50px;
+            border: 1px solid #000;
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            font-size: 16px;
+        }
+
+        .footer-note {
+            margin-top: 40px;
+            text-align: center;
+            color: #555;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .print-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 14px 28px;
+            background: #000;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 6px;
+        }
+
+        @media print {
+
+            body {
+                background: #fff;
+                padding: 0;
+            }
+
+            .print-btn {
+                display: none;
+            }
+
+            .invoice-container {
+                width: 100%;
+                padding: 20px;
+            }
+
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <button class="print-btn" onclick="window.print()">
+        Print Invoice
+    </button>
+
+    <div class="invoice-container">
+
+        <div class="top-header">
+
+            <div class="logo">
+                shop<span>suddenly</span>
+            </div>
+
+            <div class="invoice-title">
+                <h1>Tax Invoice/Bill of Supply/Cash Memo</h1>
+                <p>(Original for Recipient)</p>
+            </div>
+
+        </div>
+
+        <div class="address-section">
+
+            <div class="address-box">
+
+                <h3>Sold By :</h3>
+
+                <strong>SHOPSUDDENLY PRIVATE LIMITED</strong><br><br>
+
+                Plot No. 88, Tech Business Park,<br>
+                Industrial Area Phase 8B,<br>
+                Mohali, Punjab, 160071<br>
+                INDIA<br><br>
+
+                <strong>PAN No:</strong> AABCS1234Q<br>
+                <strong>GST Registration No:</strong> 03AABCS1234Q1Z2
+
+            </div>
+
+            <div class="address-box" style="text-align:right;">
+
+                <h3>Billing Address :</h3>
+
+                Ravi Roushan<br>
+                Kapurthala Road,<br>
+                Jalandhar, Punjab - 144411<br>
+                INDIA<br><br>
+
+                <strong>State/UT Code:</strong> 03<br><br>
+
+                <h3>Shipping Address :</h3>
+
+                Ravi Roushan<br>
+                Kapurthala Road,<br>
+                Jalandhar, Punjab - 144411<br>
+                INDIA<br><br>
+
+                <strong>Place of Supply:</strong> Punjab
+
+            </div>
+
+        </div>
+
+        <div class="info-grid">
+
+            <div class="info-left">
+
+                <strong>Order Number:</strong> SS-4583815-8424352<br>
+                <strong>Order Date:</strong> 16.05.2026
+
+            </div>
+
+            <div class="info-right" style="text-align:right;">
+
+                <strong>Invoice Number:</strong> INV-SS-2026-4587<br>
+                <strong>Invoice Date:</strong> 16.05.2026
+
+            </div>
+
+        </div>
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Sl. No</th>
+                    <th>Description</th>
+                    <th>Unit Price</th>
+                    <th>Discount</th>
+                    <th>Qty</th>
+                    <th>Net Amount</th>
+                    <th>Tax Rate</th>
+                    <th>Tax Type</th>
+                    <th>Tax Amount</th>
+                    <th>Total Amount</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+
+                    <td>1</td>
+
+                    <td>
+                        Premium Essential Hoodie - Midnight Black<br>
+                        SKU: SS-APP-2045
+                    </td>
+
+                    <td>₹2,499</td>
+                    <td>₹500</td>
+                    <td>1</td>
+                    <td>₹1,999</td>
+                    <td>12%</td>
+                    <td>IGST</td>
+                    <td>₹239.88</td>
+                    <td>₹2,238.88</td>
+
+                </tr>
+
+                <tr>
+
+                    <td>2</td>
+
+                    <td>
+                        Classic Organic Cotton T-Shirt<br>
+                        SKU: SS-APP-909
+                    </td>
+
+                    <td>₹499</td>
+                    <td>₹100</td>
+                    <td>2</td>
+                    <td>₹798</td>
+                    <td>5%</td>
+                    <td>IGST</td>
+                    <td>₹39.90</td>
+                    <td>₹837.90</td>
+
+                </tr>
+
+                <tr class="total-row">
+
+                    <td colspan="8" style="text-align:right;">
+                        TOTAL
+                    </td>
+
+                    <td>
+                        ₹279.78
+                    </td>
+
+                    <td>
+                        ₹3,076.78
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <div class="amount-words">
+
+            Amount in Words:<br>
+            Three Thousand Seventy Six Rupees and Seventy Eight Paise Only
+
+        </div>
+
+        <div class="signature-box">
+
+            <div class="signature">
+
+                For SHOPSUDDENLY PRIVATE LIMITED<br><br><br>
+
+                Authorized Signatory
+
+            </div>
+
+        </div>
+
+        <div class="bottom-info">
+
+            <div>
+                <strong>Payment Transaction ID:</strong><br>
+                TXN7845123698
+            </div>
+
+            <div>
+                <strong>Date & Time:</strong><br>
+                16/05/2026, 03:42 PM
+            </div>
+
+            <div>
+                <strong>Invoice Value:</strong><br>
+                ₹3,076.78
+            </div>
+
+            <div>
+                <strong>Mode of Payment:</strong><br>
+                UPI
+            </div>
+
+        </div>
+
+        <div class="footer-note">
+
+            Whether tax is payable under reverse charge - No<br><br>
+
+            This is a computer generated invoice and does not require signature.<br>
+            © 2026 SHOPSUDDENLY PRIVATE LIMITED
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

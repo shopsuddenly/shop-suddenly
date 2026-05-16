@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { OrderService } from "@/services/order.service";
 import { ExportService } from "@/services/export.service";
+import { InvoiceService } from "@/services/invoice.service";
 import { Order, OrderStatus } from "@/types/order";
 import { OrderStatusBadge } from "@/components/orders/OrderStatusBadge";
-import { Loader2, Search, Download, Eye, Filter } from "lucide-react";
+import { Loader2, Search, Download, Eye, Filter, FileText } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import Link from "next/link";
 import { toast } from "sonner";
+import { InvoicePreviewDialog } from "@/components/orders/InvoicePreviewDialog";
 
 const statusFilters: { value: OrderStatus | 'all'; label: string }[] = [
     { value: 'all', label: 'All Orders' },
@@ -25,6 +27,8 @@ export default function AdminOrdersPage() {
     const [loading, setLoading] = useState(true);
     const [activeFilter, setActiveFilter] = useState<OrderStatus | 'all'>('all');
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
     useEffect(() => {
         fetchOrders();
@@ -182,12 +186,25 @@ export default function AdminOrdersPage() {
                                             {new Date(order.createdAt).toLocaleDateString()}
                                         </td>
                                         <td className="px-4 py-4">
-                                            <Link
-                                                href={`/admin/orders/${order.id}`}
-                                                className="text-primary hover:underline text-sm"
-                                            >
-                                                View
-                                            </Link>
+                                            <div className="flex items-center gap-3">
+                                                <Link
+                                                    href={`/admin/orders/${order.id}`}
+                                                    className="text-primary hover:text-primary/80 transition-colors p-1"
+                                                    title="View Details"
+                                                >
+                                                    <Eye className="w-4 h-4" />
+                                                </Link>
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedOrder(order);
+                                                        setIsPreviewOpen(true);
+                                                    }}
+                                                    className="text-muted-foreground hover:text-primary transition-colors p-1"
+                                                    title="Download Invoice"
+                                                >
+                                                    <FileText className="w-4 h-4" />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -196,6 +213,12 @@ export default function AdminOrdersPage() {
                     </div>
                 </div>
             )}
+
+            <InvoicePreviewDialog
+                order={selectedOrder}
+                open={isPreviewOpen}
+                onOpenChange={setIsPreviewOpen}
+            />
         </div>
     );
 }
