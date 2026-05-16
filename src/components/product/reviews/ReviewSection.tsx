@@ -53,14 +53,14 @@ export function ReviewSection({ productId, averageRating = 0, reviewCount = 0 }:
     }, [user, productId, authLoading]);
 
     return (
-        <section className="py-16 border-t border-border mt-16" id="reviews">
+        <section className="py-8 md:py-16 border-t border-border mt-8 md:mt-16" id="reviews">
             <div className="flex flex-col md:flex-row gap-12">
                 {/* Summary Column */}
                 {/* Summary Column - Stats Board */}
                 <div className="md:w-1/3 space-y-8">
                     <h2 className="font-serif text-3xl text-foreground">Ratings & Reviews</h2>
 
-                    <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
+                    <div className="bg-card p-4 md:p-6 rounded-2xl border border-border shadow-sm">
                         <div className="flex items-center gap-6 mb-8">
                             <div className="text-center">
                                 <div className="text-5xl font-bold text-foreground mb-1">

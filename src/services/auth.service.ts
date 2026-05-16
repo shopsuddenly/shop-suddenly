@@ -85,7 +85,6 @@ export const AuthService = {
             const result = await signInWithPopup(auth, googleProvider);
             return AuthService.syncUserToFirestore(result.user);
         } catch (error: any) {
-            console.error("AuthService (Google) failed:", error);
             throw error;
         }
     },
@@ -96,7 +95,6 @@ export const AuthService = {
             return AuthService.syncUserToFirestore(result.user);
         } catch (error: any) {
             // For normal errors (wrong password, user not found), just throw
-            console.error("AuthService (Email) failed:", error);
             throw error;
         }
     },
@@ -133,7 +131,6 @@ export const AuthService = {
             return { ...result.user, role: 'customer', displayName: name || result.user.displayName } as AppUser;
 
         } catch (error: any) {
-            console.error("AuthService (Register) failed:", error);
             throw error;
         }
     },

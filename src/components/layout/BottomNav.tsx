@@ -71,7 +71,7 @@ export function BottomNav({ onSearchClick }: BottomNavProps) {
             }
 
             return (
-              <button key={item.label} onClick={item.onClick} className="flex-1 h-full">
+              <button key={item.label} suppressHydrationWarning onClick={item.onClick} className="flex-1 h-full">
                 {content}
               </button>
             );

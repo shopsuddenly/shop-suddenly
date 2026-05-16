@@ -35,7 +35,7 @@ export function SizeGuideModal({ isOpen, onClose }: SizeGuideModalProps) {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200">
             <div
-                className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-card border border-border shadow-2xl animate-in zoom-in-95 slide-in-from-bottom-2 duration-300 p-6 md:p-8"
+                className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-card border border-border shadow-2xl animate-in zoom-in-95 slide-in-from-bottom-2 duration-300 p-4 md:p-10 rounded-2xl"
                 onClick={(e) => e.stopPropagation()}
             >
                 <button
@@ -45,8 +45,9 @@ export function SizeGuideModal({ isOpen, onClose }: SizeGuideModalProps) {
                     <X className="w-6 h-6" />
                 </button>
 
-                <div className="text-center mb-8">
+                <div className="text-center mb-6 md:mb-10">
                     <h2 className="font-serif text-3xl md:text-4xl text-foreground">Size Guide</h2>
+                    <div className="w-12 h-1 bg-primary mx-auto mt-4 rounded-full opacity-20" />
                 </div>
 
                 {loading ? (
@@ -54,91 +55,54 @@ export function SizeGuideModal({ isOpen, onClose }: SizeGuideModalProps) {
                         <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
                     </div>
                 ) : content ? (
-                    <div
-                        className="prose prose-neutral dark:prose-invert max-w-none font-sans text-muted-foreground leading-relaxed"
-                        dangerouslySetInnerHTML={{ __html: content.content }}
-                    />
+                    <div className="overflow-x-auto pb-4 no-scrollbar">
+                        <div
+                            className="prose prose-neutral dark:prose-invert max-w-none font-sans text-muted-foreground leading-relaxed size-guide-content"
+                            dangerouslySetInnerHTML={{ __html: content.content }}
+                        />
+                    </div>
                 ) : (
-                    <div className="space-y-12">
-                        <div className="overflow-x-auto">
-                            <h3 className="font-serif text-xl mb-4 text-center">Men&apos;s Collection</h3>
-                            <table className="w-full text-sm font-sans text-left">
-                                <thead className="bg-secondary text-foreground uppercase tracking-luxury">
-                                    <tr>
-                                        <th className="p-4">Size</th>
-                                        <th className="p-4">Chest (in)</th>
-                                        <th className="p-4">Waist (in)</th>
-                                        <th className="p-4">Hips (in)</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="text-muted-foreground">
-                                    <tr className="border-b border-border">
-                                        <td className="p-4 font-bold text-foreground">S</td>
-                                        <td className="p-4">36-38</td>
-                                        <td className="p-4">28-30</td>
-                                        <td className="p-4">36-38</td>
-                                    </tr>
-                                    <tr className="border-b border-border">
-                                        <td className="p-4 font-bold text-foreground">M</td>
-                                        <td className="p-4">38-40</td>
-                                        <td className="p-4">30-32</td>
-                                        <td className="p-4">38-40</td>
-                                    </tr>
-                                    <tr className="border-b border-border">
-                                        <td className="p-4 font-bold text-foreground">L</td>
-                                        <td className="p-4">40-42</td>
-                                        <td className="p-4">32-34</td>
-                                        <td className="p-4">40-42</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="p-4 font-bold text-foreground">XL</td>
-                                        <td className="p-4">42-44</td>
-                                        <td className="p-4">34-36</td>
-                                        <td className="p-4">42-44</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div className="overflow-x-auto no-scrollbar">
+                        <div className="text-center mb-6">
+                            <h3 className="font-serif text-xl text-foreground">Women&apos;s Collection</h3>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1">Slim Fit</p>
                         </div>
-
-                        <div className="overflow-x-auto">
-                            <h3 className="font-serif text-xl mb-4 text-center">Women&apos;s Collection</h3>
-                            <table className="w-full text-sm font-sans text-left">
-                                <thead className="bg-secondary text-foreground uppercase tracking-luxury">
-                                    <tr>
-                                        <th className="p-4">Size</th>
-                                        <th className="p-4">Bust (in)</th>
-                                        <th className="p-4">Waist (in)</th>
-                                        <th className="p-4">Hips (in)</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="text-muted-foreground">
-                                    <tr className="border-b border-border">
-                                        <td className="p-4 font-bold text-foreground">XS</td>
-                                        <td className="p-4">30-32</td>
-                                        <td className="p-4">24-26</td>
-                                        <td className="p-4">34-36</td>
-                                    </tr>
-                                    <tr className="border-b border-border">
-                                        <td className="p-4 font-bold text-foreground">S</td>
-                                        <td className="p-4">32-34</td>
-                                        <td className="p-4">26-28</td>
-                                        <td className="p-4">36-38</td>
-                                    </tr>
-                                    <tr className="border-b border-border">
-                                        <td className="p-4 font-bold text-foreground">M</td>
-                                        <td className="p-4">34-36</td>
-                                        <td className="p-4">28-30</td>
-                                        <td className="p-4">38-40</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="p-4 font-bold text-foreground">L</td>
-                                        <td className="p-4">36-38</td>
-                                        <td className="p-4">30-32</td>
-                                        <td className="p-4">40-42</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <table className="w-full text-sm font-sans border-collapse">
+                            <thead className="bg-secondary/50 text-foreground uppercase tracking-luxury border border-border">
+                                <tr>
+                                    <th className="p-4 text-left border border-border">Size</th>
+                                    <th className="p-4 border border-border text-center">Bust (in)</th>
+                                    <th className="p-4 border border-border text-center">Waist (in)</th>
+                                    <th className="p-4 border border-border text-center">Hips (in)</th>
+                                </tr>
+                            </thead>
+                            <tbody className="text-muted-foreground">
+                                <tr className="border border-border">
+                                    <td className="p-4 font-bold text-foreground bg-muted/20 border border-border">XS</td>
+                                    <td className="p-4 border border-border text-center">30-32</td>
+                                    <td className="p-4 border border-border text-center">24-26</td>
+                                    <td className="p-4 border border-border text-center">34-36</td>
+                                </tr>
+                                <tr className="border border-border">
+                                    <td className="p-4 font-bold text-foreground bg-muted/20 border border-border">S</td>
+                                    <td className="p-4 border border-border text-center">32-34</td>
+                                    <td className="p-4 border border-border text-center">26-28</td>
+                                    <td className="p-4 border border-border text-center">36-38</td>
+                                </tr>
+                                <tr className="border border-border">
+                                    <td className="p-4 font-bold text-foreground bg-muted/20 border border-border">M</td>
+                                    <td className="p-4 border border-border text-center">34-36</td>
+                                    <td className="p-4 border border-border text-center">28-30</td>
+                                    <td className="p-4 border border-border text-center">38-40</td>
+                                </tr>
+                                <tr className="border border-border">
+                                    <td className="p-4 font-bold text-foreground bg-muted/20 border border-border">L</td>
+                                    <td className="p-4 border border-border text-center">36-38</td>
+                                    <td className="p-4 border border-border text-center">30-32</td>
+                                    <td className="p-4 border border-border text-center">40-42</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 )}
             </div>

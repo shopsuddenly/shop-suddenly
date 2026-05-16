@@ -116,7 +116,7 @@ function RegisterPageContent() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <div className="min-h-[80vh] flex flex-col items-center justify-center p-4 py-12 md:py-20 bg-background">
             <Card className="w-[350px]">
                 <CardHeader>
                     <CardTitle>{step === 'DETAILS' ? 'Create Account' : 'Verify Email'}</CardTitle>

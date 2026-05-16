@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Product } from "@/types/store";
 import { Badge } from "@/components/common/Badge";
 import { ProductSlider } from "@/components/home/ProductSlider";
-import { Heart, Minus, Plus, ChevronDown, Truck, RotateCcw, Shield } from "lucide-react";
+import { Heart, Minus, Plus, ChevronDown, Truck, RotateCcw, Shield, MapPin, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -40,6 +40,45 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, skipSnaps: false });
     const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
     const [selectedIndex, setSelectedIndex] = useState(0);
+
+    const [pincode, setPincode] = useState("");
+    const [deliveryInfo, setDeliveryInfo] = useState<{ date: string; cod: boolean } | null>(null);
+    const [isChecking, setIsChecking] = useState(false);
+
+    const handleCheckDelivery = () => {
+        if (!pincode || pincode.length < 5) {
+            toast.error("Please enter a valid pincode or city");
+            return;
+        }
+        setIsChecking(true);
+        // Simulate API check
+        setTimeout(() => {
+            setIsChecking(false);
+            setDeliveryInfo({
+                date: "By Tue, May 19",
+                cod: true
+            });
+            toast.success("Delivery available to " + pincode);
+        }, 1500);
+    };
+
+    const handleUseMyLocation = () => {
+        if ("geolocation" in navigator) {
+            toast.info("Detecting your location...");
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    // Simulated reverse geocoding to a local pincode
+                    setPincode("400001");
+                    toast.success("Location detected!");
+                },
+                (error) => {
+                    toast.error("Could not access location");
+                }
+            );
+        } else {
+            toast.error("Geolocation not supported");
+        }
+    };
 
     const onSelect = () => {
         if (!emblaApi) return;
@@ -107,9 +146,9 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
 
     return (
         <>
-            <section className="pt-28 pb-16 md:pt-32">
+            <section className="pt-20 pb-8 md:pt-32 md:pb-16">
                 <div className="luxury-container">
-                    <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
+                    <div className="grid lg:grid-cols-2 gap-4 lg:gap-16">
                         {/* Image Gallery */}
                         <div className="space-y-4">
                             {/* Desktop: Main Image + Thumbnails | Mobile: Swipe Carousel */}
@@ -127,6 +166,7 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                                     {images.slice(0, 4).map((image, index) => (
                                         <button
                                             key={index}
+                                            suppressHydrationWarning
                                             onClick={() => setActiveImage(index)}
                                             className={cn(
                                                 "aspect-[3/4] overflow-hidden bg-card transition-all duration-300 relative",
@@ -195,7 +235,7 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                                 <h1 className="font-serif text-3xl md:text-4xl text-foreground mb-4">
                                     {product.name}
                                 </h1>
-                                <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-4 pl-1">
                                     <p className="font-serif text-3xl font-medium text-foreground">
                                         {formatPrice(product.price)}
                                     </p>
@@ -231,14 +271,15 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                                         // 2. Render a selector for EACH attribute type (e.g. Size, Color)
                                         return Object.entries(attributes).map(([attrName, options]) => (
                                             <div key={attrName}>
-                                                <div className="flex items-center justify-between mb-3">
-                                                    <p className="text-sm font-sans text-muted-foreground">
-                                                        {attrName}: <span className="text-foreground">{selectedAttributes[attrName] || "Select"}</span>
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <p className="text-[11px] font-sans uppercase tracking-[0.2em] text-muted-foreground">
+                                                        {attrName}: <span className="text-foreground font-bold">{selectedAttributes[attrName] || "Select"}</span>
                                                     </p>
                                                     {attrName === 'Size' && (
                                                         <button
+                                                            suppressHydrationWarning
                                                             onClick={() => setIsSizeGuideOpen(true)}
-                                                            className="text-xs font-sans uppercase tracking-luxury text-primary hover:underline"
+                                                            className="text-[10px] font-sans uppercase tracking-[0.2em] text-primary hover:text-primary/70 transition-colors underline underline-offset-4"
                                                         >
                                                             Size Guide
                                                         </button>
@@ -290,6 +331,7 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                                                         return (
                                                             <button
                                                                 key={option}
+                                                                suppressHydrationWarning
                                                                 onClick={() => setSelectedAttributes(prev => ({ ...prev, [attrName]: option }))}
                                                                 disabled={!hasStock && !isSelected} // Allow deselecting or viewing? No, standard is disable if no stock.
                                                                 className={cn(
@@ -339,15 +381,16 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                             ) : (
                                 /* Fallback to legacy static sizes if no variants exist */
                                 <div>
-                                    <div className="flex items-center justify-between mb-3">
-                                        <p className="text-sm font-sans text-muted-foreground">
-                                            Size: <span className="text-foreground">{selectedAttributes['Size'] || "Select"}</span>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <p className="text-[11px] font-sans uppercase tracking-[0.2em] text-muted-foreground">
+                                            Size: <span className="text-foreground font-bold">{selectedAttributes['Size'] || "Select"}</span>
                                         </p>
                                     </div>
                                     <div className="flex flex-wrap gap-2">
                                         {sizes.map((size) => (
                                             <button
                                                 key={size}
+                                                suppressHydrationWarning
                                                 onClick={() => setSelectedAttributes({ 'Size': size })}
                                                 className={cn(
                                                     "w-14 h-12 border text-sm font-sans transition-all duration-300",
@@ -367,21 +410,23 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
 
                                 {/* Top Row (Mobile): Quantity and Wishlist */}
-                                <div className="flex justify-between items-center w-full sm:contents">
+                                <div className="flex items-center gap-4 w-full sm:contents">
                                     {/* Quantity */}
-                                    <div className="flex items-center border border-border h-14 rounded-md overflow-hidden">
+                                    <div className="flex-1 sm:flex-none flex items-center border border-border h-12 rounded-md overflow-hidden bg-card/50">
                                         <button
                                             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                            className="w-12 h-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                                            suppressHydrationWarning
+                                            className="w-12 h-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors hover:bg-muted/50"
                                         >
-                                            <Minus className="w-4 h-4" />
+                                            <Minus className="w-5 h-5" />
                                         </button>
-                                        <span className="w-12 text-center font-sans text-foreground">{quantity}</span>
+                                        <span className="flex-1 text-center font-sans text-sm font-bold text-foreground">{quantity}</span>
                                         <button
                                             onClick={() => setQuantity(quantity + 1)}
-                                            className="w-12 h-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                                            suppressHydrationWarning
+                                            className="w-12 h-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors hover:bg-muted/50"
                                         >
-                                            <Plus className="w-4 h-4" />
+                                            <Plus className="w-5 h-5" />
                                         </button>
                                     </div>
 
@@ -389,161 +434,89 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                                     <div className="sm:hidden">
                                         <WishlistButton
                                             product={product}
-                                            className="w-14 h-14 border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors rounded-md"
+                                            className="w-12 h-12 border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all rounded-md bg-card/50 haptic-press"
                                         />
                                     </div>
                                 </div>
 
 
-                                {/* Action Buttons - Full Width Rows on Mobile, Flex on Desktop */}
-                                <div className="flex gap-4 w-full sm:flex-1">
-                                    {/* Add to Bag */}
-                                    <button
-                                        onClick={() => {
-                                            // Legacy / Fallback Mode (No Variants defined in DB)
-                                            if (!product.variants || product.variants.length === 0) {
-                                                if (!selectedAttributes['Size']) {
-                                                    toast.error("Please select a size");
-                                                    return;
-                                                }
-                                                addToCart(product, quantity, String(selectedAttributes['Size'])); // Treat size string as variantId for legacy
-                                                toast.success("Added to bag!");
-                                                return;
-                                            }
-
-                                            // Variant Mode
-                                            // 1. Check if all attributes selected
-                                            // We need to know HOW MANY attributes exist to know if selection is complete.
-                                            // Take the first variant as a template for keys.
-                                            const requiredKeys = Object.keys(product.variants[0].attributes || {});
-                                            const missingKeys = requiredKeys.filter(k => !selectedAttributes[k]);
-
-                                            if (missingKeys.length > 0) {
-                                                toast.error(`Please select ${missingKeys.join(' and ')}`);
-                                                return;
-                                            }
-
-                                            // 2. Find matching variant
-                                            const variant = product.variants.find(v =>
-                                                Object.entries(selectedAttributes).every(([k, val]) => v.attributes[k] === val)
-                                            );
-
-                                            if (!variant) {
-                                                toast.error("Unavailable combination");
-                                                return;
-                                            }
-
-                                            if (variant.stock < quantity) {
-                                                toast.error(`Insufficient stock (Only ${variant.stock} left)`);
-                                                return;
-                                            }
-
-                                            addToCart(product, quantity, variant.id);
-                                            toast.success("Added to bag!");
-                                        }}
-                                        disabled={
-                                            // Disable if specific variant selected and out of stock
-                                            (() => {
-                                                if (!product.variants || product.variants.length === 0) return false;
-                                                const variant = product.variants.find(v =>
-                                                    Object.entries(selectedAttributes).every(([k, val]) => v.attributes[k] === val)
-                                                );
-                                                return variant ? variant.stock === 0 : false;
-                                            })()
-                                        }
-                                        className="flex-1 btn-luxury h-14 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-base px-2 sm:px-4 text-center break-words" // Added text-xs/break-words to prevent overflow
-                                    >
-                                        <span>
-                                            {(() => {
-                                                if (product.variants && product.variants.length > 0) {
-                                                    const variant = product.variants.find(v =>
-                                                        Object.entries(selectedAttributes).every(([k, val]) => v.attributes[k] === val)
-                                                    );
-                                                    if (variant && variant.stock === 0) return "Out of Stock";
-                                                }
-                                                return "Add to Bag";
-                                            })()}
-                                        </span>
-                                    </button>
-
-                                    {/* Buy Now Button */}
-                                    <button
-                                        onClick={() => {
-                                            // Legacy Logic
-                                            if (!product.variants || product.variants.length === 0) {
-                                                if (!selectedAttributes['Size']) {
-                                                    toast.error("Please select a size");
-                                                    return;
-                                                }
-                                                setDirectCheckoutItem(product, quantity, String(selectedAttributes['Size']));
-                                                router.push('/checkout');
-                                                return;
-                                            }
-
-                                            // Variant Logic
-                                            const requiredKeys = Object.keys(product.variants[0].attributes || {});
-                                            const missingKeys = requiredKeys.filter(k => !selectedAttributes[k]);
-
-                                            if (missingKeys.length > 0) {
-                                                toast.error(`Please select ${missingKeys.join(' and ')}`);
-                                                return;
-                                            }
-
-                                            const variant = product.variants.find(v =>
-                                                Object.entries(selectedAttributes).every(([k, val]) => v.attributes[k] === val)
-                                            );
-
-                                            if (!variant) {
-                                                toast.error("Unavailable combination");
-                                                return;
-                                            }
-
-                                            if (variant.stock < quantity) {
-                                                toast.error(`Insufficient stock (Only ${variant.stock} left)`);
-                                                return;
-                                            }
-
-                                            setDirectCheckoutItem(product, quantity, variant.id);
-                                            router.push('/checkout');
-                                        }}
-                                        disabled={
-                                            (() => {
-                                                if (!product.variants || product.variants.length === 0) return false;
-                                                const variant = product.variants.find(v =>
-                                                    Object.entries(selectedAttributes).every(([k, val]) => v.attributes[k] === val)
-                                                );
-                                                return variant ? variant.stock === 0 : false;
-                                            })()
-                                        }
-                                        className="flex-1 h-14 border border-foreground text-foreground font-sans uppercase tracking-luxury hover:bg-foreground hover:text-background transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-foreground text-xs sm:text-base px-2 sm:px-4 rounded-md"
-                                    >
-                                        Buy Now
-                                    </button>
-                                </div>
-
                                 {/* Wishlist Desktop Position - Hidden on Mobile */}
                                 <div className="hidden sm:block">
                                     <WishlistButton
                                         product={product}
-                                        className="w-14 h-14 border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors rounded-md"
+                                        className="w-12 h-12 border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors rounded-md"
                                     />
                                 </div>
                             </div>
 
+                            {/* Google Location / Delivery Availability Part */}
+                            <div className="w-full pt-2 pb-6 space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <MapPin className="w-4 h-4 text-primary" />
+                                        <span className="text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-foreground">Delivery Availability</span>
+                                    </div>
+                                    <button 
+                                        suppressHydrationWarning
+                                        onClick={handleUseMyLocation}
+                                        className="text-[9px] font-sans font-bold uppercase tracking-[0.2em] text-primary hover:underline underline-offset-4 haptic-press"
+                                    >
+                                        Use My Location
+                                    </button>
+                                </div>
+                                
+                                <div className="relative group">
+                                    <input 
+                                        type="text" 
+                                        value={pincode}
+                                        onChange={(e) => setPincode(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleCheckDelivery()}
+                                        placeholder="Enter Pincode or Search City" 
+                                        className="w-full h-12 bg-card/30 border border-border rounded-md px-4 pr-24 text-sm font-sans focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all group-hover:border-primary/50"
+                                    />
+                                    <button 
+                                        suppressHydrationWarning
+                                        onClick={handleCheckDelivery}
+                                        disabled={isChecking}
+                                        className="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-foreground text-background text-[10px] font-bold uppercase tracking-widest rounded transition-all hover:bg-primary active:scale-95 disabled:opacity-50 flex items-center justify-center min-w-[80px]"
+                                    >
+                                        {isChecking ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Check"}
+                                    </button>
+                                </div>
+                                
+                                {deliveryInfo ? (
+                                    <div className="flex items-start gap-3 p-3 bg-green-500/5 rounded-md border border-green-500/20 animate-in fade-in slide-in-from-top-1">
+                                        <Truck className="w-4 h-4 text-green-600 mt-0.5" />
+                                        <div className="space-y-0.5">
+                                            <p className="text-[10px] font-sans font-bold uppercase tracking-wider text-green-700">Delivery Available</p>
+                                            <p className="text-[10px] font-sans text-green-600/80">Get it {deliveryInfo.date}. {deliveryInfo.cod && "COD Available."}</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-start gap-3 p-3 bg-secondary/10 rounded-md border border-border/30">
+                                        <Truck className="w-4 h-4 text-muted-foreground mt-0.5" />
+                                        <div className="space-y-0.5">
+                                            <p className="text-[10px] font-sans font-bold uppercase tracking-wider text-foreground">Estimate Delivery</p>
+                                            <p className="text-[10px] font-sans text-muted-foreground">Enter pincode to see actual delivery dates.</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
 
                             {/* Features */}
-                            <div className="grid grid-cols-3 gap-4 py-6 border-y border-border">
-                                <div className="text-center">
-                                    <Truck className="w-5 h-5 mx-auto mb-2 text-primary" />
-                                    <p className="text-xs font-sans text-muted-foreground">Free Shipping</p>
+                            <div className="grid grid-cols-3 gap-4 py-8 border-y border-border/50">
+                                <div className="text-center space-y-1">
+                                    <Truck className="w-5 h-5 mx-auto mb-2 text-primary opacity-80" />
+                                    <p className="text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-foreground">Free Shipping</p>
                                 </div>
-                                <div className="text-center">
-                                    <RotateCcw className="w-5 h-5 mx-auto mb-2 text-primary" />
-                                    <p className="text-xs font-sans text-muted-foreground">Easy Returns</p>
+                                <div className="text-center space-y-1">
+                                    <RotateCcw className="w-5 h-5 mx-auto mb-2 text-primary opacity-80" />
+                                    <p className="text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-foreground">Easy Returns</p>
                                 </div>
-                                <div className="text-center">
-                                    <Shield className="w-5 h-5 mx-auto mb-2 text-primary" />
-                                    <p className="text-xs font-sans text-muted-foreground">Secure Payment</p>
+                                <div className="text-center space-y-1">
+                                    <Shield className="w-5 h-5 mx-auto mb-2 text-primary opacity-80" />
+                                    <p className="text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-foreground">Secure Payment</p>
                                 </div>
                             </div>
 
@@ -552,6 +525,7 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                                 {/* Description */}
                                 <div className="border-b border-border">
                                     <button
+                                        suppressHydrationWarning
                                         onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
                                         className="w-full flex items-center justify-between py-4 text-sm font-sans uppercase tracking-luxury text-foreground"
                                     >
@@ -571,6 +545,7 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                                 {/* Care Instructions */}
                                 <div className="border-b border-border">
                                     <button
+                                        suppressHydrationWarning
                                         onClick={() => setIsCareOpen(!isCareOpen)}
                                         className="w-full flex items-center justify-between py-4 text-sm font-sans uppercase tracking-luxury text-foreground"
                                     >
@@ -619,14 +594,11 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                 onClose={() => setIsSizeGuideOpen(false)}
             />
 
-            {/* Sticky Mobile CTA Bar */}
-            <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-background/95 backdrop-blur-md border-t border-border/50 safe-bottom p-4 animate-in slide-in-from-bottom duration-500">
-                <div className="flex items-center gap-4">
-                    <div className="flex-1">
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest leading-none mb-1">Total Price</p>
-                        <p className="text-xl font-serif font-bold leading-none">{formatPrice(product.price)}</p>
-                    </div>
+            {/* Sticky CTA Bar (Visible on all screens) */}
+            <div className="fixed bottom-20 lg:bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border/50 safe-bottom p-4 animate-in slide-in-from-bottom duration-500 shadow-[0_-8px_30px_rgb(0,0,0,0.12)]">
+                <div className="flex items-center gap-3">
                     <button
+                        suppressHydrationWarning
                         onClick={() => {
                             // Find matching variant
                             const requiredKeys = Object.keys(product.variants?.[0]?.attributes || {});
@@ -648,15 +620,84 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                                 return;
                             }
 
+                            if (variant && variant.stock < quantity) {
+                                toast.error(`Insufficient stock (Only ${variant.stock} left)`);
+                                return;
+                            }
+
                             addToCart(product, quantity, variant?.id || String(selectedAttributes['Size']));
                             toast.success("Added to bag!");
                         }}
-                        className="btn-luxury h-12 flex items-center justify-center px-6 min-w-[140px] haptic-press"
+                        disabled={
+                            (() => {
+                                if (!product.variants || product.variants.length === 0) return false;
+                                const variant = product.variants.find(v =>
+                                    Object.entries(selectedAttributes).every(([k, val]) => v.attributes[k] === val)
+                                );
+                                return variant ? variant.stock === 0 : false;
+                            })()
+                        }
+                        className="flex-1 btn-luxury h-12 flex items-center justify-center px-4 haptic-press disabled:opacity-50"
                     >
-                        <span>Add to Bag</span>
+                        <span>
+                            {(() => {
+                                if (product.variants && product.variants.length > 0) {
+                                    const variant = product.variants.find(v =>
+                                        Object.entries(selectedAttributes).every(([k, val]) => v.attributes[k] === val)
+                                    );
+                                    if (variant && variant.stock === 0) return "Out of Stock";
+                                }
+                                return "Add to Bag";
+                            })()}
+                        </span>
+                    </button>
+
+                    <button
+                        suppressHydrationWarning
+                        onClick={() => {
+                            // Variant Logic
+                            const requiredKeys = Object.keys(product.variants?.[0]?.attributes || {});
+                            const missingKeys = requiredKeys.filter(k => !selectedAttributes[k]);
+
+                            if (missingKeys.length > 0) {
+                                window.scrollTo({ top: 300, behavior: 'smooth' });
+                                toast.error(`Please select ${missingKeys.join(' and ')}`);
+                                return;
+                            }
+
+                            const variant = product.variants?.find(v =>
+                                Object.entries(selectedAttributes).every(([k, val]) => v.attributes[k] === val)
+                            );
+
+                            if (!variant && (product.variants?.length ?? 0) > 0) {
+                                toast.error("Unavailable combination");
+                                return;
+                            }
+
+                            if (variant && variant.stock < quantity) {
+                                toast.error(`Insufficient stock (Only ${variant.stock} left)`);
+                                return;
+                            }
+
+                            setDirectCheckoutItem(product, quantity, variant?.id || String(selectedAttributes['Size']));
+                            router.push('/checkout');
+                        }}
+                        disabled={
+                            (() => {
+                                if (!product.variants || product.variants.length === 0) return false;
+                                const variant = product.variants.find(v =>
+                                    Object.entries(selectedAttributes).every(([k, val]) => v.attributes[k] === val)
+                                );
+                                return variant ? variant.stock === 0 : false;
+                            })()
+                        }
+                        className="flex-1 h-12 border border-foreground text-foreground font-sans uppercase tracking-[0.2em] text-[10px] font-bold hover:bg-foreground hover:text-background transition-all disabled:opacity-50 px-4 rounded-md haptic-press"
+                    >
+                        Buy Now
                     </button>
                 </div>
             </div>
+
         </>
     );
 }

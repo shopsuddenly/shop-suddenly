@@ -5,7 +5,8 @@ export type SectionType =
     | 'PRODUCT_SLIDER'
     | 'PROMO_BANNER'
     | 'LOOKBOOK'
-    | 'MARQUEE';
+    | 'MARQUEE'
+    | 'TRUST_BADGES';
 
 export interface BaseSection {
     id: string;
@@ -74,6 +75,10 @@ export interface MarqueeSection extends BaseSection {
     text: string;
 }
 
+export interface TrustBadgesSection extends BaseSection {
+    type: 'TRUST_BADGES';
+}
+
 export type PageSection =
     | HeroSection
     | BrandSection
@@ -81,7 +86,8 @@ export type PageSection =
     | ProductSliderSection
     | PromoBannerSection
     | LookbookSection
-    | MarqueeSection;
+    | MarqueeSection
+    | TrustBadgesSection;
 
 export interface CountdownConfig {
     isEnabled: boolean;

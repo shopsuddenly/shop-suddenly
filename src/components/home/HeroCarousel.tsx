@@ -50,7 +50,7 @@ export function HeroCarousel({ slides = [] }: HeroCarouselProps) {
   };
 
   return (
-    <section className="relative h-[92vh] w-full overflow-hidden bg-black">
+    <section className="relative h-[70vh] md:h-[92vh] w-full overflow-hidden bg-black">
       {/* Slides */}
       {slides.map((slide, index) => (
         <div
@@ -88,11 +88,11 @@ export function HeroCarousel({ slides = [] }: HeroCarouselProps) {
           </div>
 
           {/* Content */}
-          <div className="relative h-full container flex items-center pt-24 pb-32">
+          <div className="relative h-full container mx-auto px-3 md:px-8 flex items-center pt-16 md:pt-24 pb-16 md:pb-20">
             <div className="max-w-3xl space-y-6 md:space-y-8">
               <div
                 className={cn(
-                  "transition-all duration-1000 delay-300 px-2 md:px-0",
+                  "transition-all duration-1000 delay-300 px-0 md:px-0",
                   index === currentSlide
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-8"
@@ -101,27 +101,21 @@ export function HeroCarousel({ slides = [] }: HeroCarouselProps) {
                 <div className="inline-block px-5 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold uppercase tracking-[0.25em] mb-6 shadow-xl">
                   {slide.subtitle}
                 </div>
-                <h1 className="text-[3.5rem] md:text-display-lg lg:text-display-xl text-white leading-[0.95] mb-6 tracking-tighter font-bold">
-                  {slide.title.split(' ').map((word, i) => (
-                    <span key={i} className="inline-block mr-3 md:mr-4">
-                      {word === 'Suddenly' ? (
-                         <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-red-500">{word}</span>
-                      ) : word}
-                    </span>
-                  ))}
+                <h1 className="text-5xl md:text-7xl lg:text-8xl text-white leading-[1.1] mb-8 tracking-tight font-display">
+                  {slide.title}
                 </h1>
                 <p className="text-base md:text-xl text-white/70 max-w-md md:max-w-xl leading-relaxed mb-10 font-medium">
                     Curated essentials for the modern lifestyle. Premium craftsmanship meets sustainable materials.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 sm:gap-5">
-                    <Link href={slide.ctaLink} className="w-full sm:w-auto">
-                      <Button size="lg" className="w-full sm:w-auto h-14 px-10 rounded-2xl bg-white text-black hover:bg-white/90 group text-base font-bold shadow-2xl">
+                <div className="flex flex-row w-full gap-3 sm:gap-5">
+                    <Link href={slide.ctaLink} className="flex-1 sm:flex-none">
+                      <Button size="lg" className="w-full sm:w-auto h-12 sm:h-14 px-2 sm:px-10 rounded-2xl bg-white text-black hover:bg-white/90 group text-sm sm:text-base font-bold shadow-2xl">
                         {slide.ctaText}
-                        <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                        <ArrowRight className="ml-1 sm:ml-2 w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1 shrink-0" />
                       </Button>
                     </Link>
-                    <Link href="/shop" className="w-full sm:w-auto">
-                       <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-10 rounded-2xl border-white/20 bg-black/20 text-white hover:bg-white hover:text-black text-base font-bold backdrop-blur-md transition-all">
+                    <Link href="/shop" className="flex-1 sm:flex-none">
+                       <Button size="lg" variant="outline" className="w-full sm:w-auto h-12 sm:h-14 px-1 sm:px-10 rounded-2xl border-white/20 bg-black/20 text-white hover:bg-white hover:text-black text-[13px] sm:text-base font-bold backdrop-blur-md transition-all">
                           View Collections
                        </Button>
                     </Link>
@@ -133,44 +127,35 @@ export function HeroCarousel({ slides = [] }: HeroCarouselProps) {
       ))}
 
       {/* Navigation Controls */}
-      <div className="absolute bottom-12 right-12 flex items-center gap-4 z-20">
-        <div className="flex items-center gap-2 mr-8">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center z-20">
+        <div className="flex items-center gap-3">
             {slides.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={cn(
-                  "h-1.5 rounded-full transition-all duration-500",
-                  index === currentSlide
-                    ? "w-10 bg-primary shadow-lg shadow-primary/50"
-                    : "w-2 bg-white/30 hover:bg-white/50"
+                onClick={() => {
+                    setIsTransitioning(true);
+                    setCurrentSlide(index);
+                    setTimeout(() => setIsTransitioning(false), 1000);
+                }}
+                className="group relative h-1 w-12 md:w-16 bg-white/20 rounded-full overflow-hidden transition-all hover:bg-white/30"
+              >
+                {index === currentSlide && (
+                    <div 
+                        key={`${index}-${currentSlide}`}
+                        className="absolute inset-0 bg-white origin-left animate-progress-slide"
+                    />
                 )}
-              />
+                {index < currentSlide && (
+                    <div className="absolute inset-0 bg-white/60" />
+                )}
+              </button>
             ))}
         </div>
         
-        <div className="flex gap-2">
-            <Button
-                variant="ghost"
-                size="icon"
-                onClick={prevSlide}
-                className="w-12 h-12 rounded-full border border-white/20 bg-white/5 text-white hover:bg-white hover:text-black backdrop-blur-md"
-            >
-                <ChevronLeft className="w-5 h-5" />
-            </Button>
-            <Button
-                variant="ghost"
-                size="icon"
-                onClick={nextSlide}
-                className="w-12 h-12 rounded-full border border-white/20 bg-white/5 text-white hover:bg-white hover:text-black backdrop-blur-md"
-            >
-                <ChevronRight className="w-5 h-5" />
-            </Button>
-        </div>
       </div>
 
       {/* Side Progress Text */}
-      <div className="absolute left-12 bottom-12 hidden md:block z-20">
+      <div className="absolute left-8 bottom-6 md:left-12 md:bottom-8 hidden md:block z-20">
          <div className="flex items-end gap-2 text-white/40 font-display">
             <span className="text-4xl font-bold text-white">0{currentSlide + 1}</span>
             <span className="text-xl mb-1">/ 0{slides.length}</span>

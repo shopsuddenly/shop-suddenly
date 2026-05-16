@@ -11,7 +11,11 @@ const config: Config = {
   theme: {
     container: {
       center: true,
-      padding: "1rem",
+      padding: {
+        DEFAULT: "0.75rem",
+        md: "2rem",
+        lg: "4rem",
+      },
       screens: {
         "2xl": "1440px",
       },
@@ -135,6 +139,18 @@ const config: Config = {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
         },
+        marquee: {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        "marquee-slow": {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        "progress-slide": {
+          "0%": { transform: "scaleX(0)" },
+          "100%": { transform: "scaleX(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -146,6 +162,9 @@ const config: Config = {
         shimmer: "shimmer 2s infinite linear",
         "scale-in": "scale-in 0.2s ease-out",
         float: "float 3s ease-in-out infinite",
+        marquee: "marquee 20s linear infinite",
+        "marquee-slow": "marquee-slow 35s linear infinite",
+        "progress-slide": "progress-slide 8s linear forwards",
       },
       boxShadow: {
         glass: "0 4px 30px rgba(0, 0, 0, 0.05)",

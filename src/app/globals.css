@@ -6,11 +6,11 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 30 56.2% 93.7%;
     --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
+    --card: 30 56.2% 93.7%;
     --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
+    --popover: 30 56.2% 93.7%;
     --popover-foreground: 240 10% 3.9%;
     --primary: 240 5.9% 10%;
     --primary-foreground: 0 0% 98%;
@@ -220,5 +220,30 @@
 
   .hover-lift:hover {
     @apply -translate-y-1 shadow-soft-lg;
+  }
+
+  .btn-luxury {
+    @apply bg-primary text-primary-foreground font-sans uppercase tracking-[0.2em] text-[11px] font-bold transition-all duration-300 hover:brightness-110 active:scale-95 flex items-center justify-center gap-2 rounded-md h-14;
+  }
+
+  .btn-luxury-outline {
+    @apply border border-border bg-transparent text-foreground font-sans uppercase tracking-[0.2em] text-[11px] font-bold transition-all duration-300 hover:bg-secondary active:scale-95 flex items-center justify-center gap-2 rounded-md h-14;
+  }
+
+  /* Size Guide Table Fixes */
+  .size-guide-content table {
+    @apply min-w-[500px] w-full border-collapse my-6 !important;
+  }
+
+  .size-guide-content th {
+    @apply bg-secondary text-foreground p-3 text-[10px] uppercase tracking-widest font-bold border border-border !important;
+  }
+
+  .size-guide-content td {
+    @apply p-4 border border-border text-sm text-center !important;
+  }
+
+  .size-guide-content tr td:first-child {
+    @apply bg-muted/30 font-bold text-foreground text-left !important;
   }
 }

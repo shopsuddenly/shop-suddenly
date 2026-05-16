@@ -3,6 +3,7 @@ import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { CategoryStrip } from "@/components/home/CategoryStrip";
 import { ProductSlider } from "@/components/home/ProductSlider";
 import { PromoBanner } from "@/components/home/PromoBanner";
+import { TrustBadges } from "@/components/home/TrustBadges";
 import Image from "next/image";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { ProductService } from "@/services/product.service";
@@ -20,18 +21,28 @@ export async function SectionRenderer({ section }: Props) {
 
         case 'BRAND':
             return (
-                <section className="py-20 md:py-32 bg-secondary/20">
-                    <div className="container">
-                        <div className="max-w-4xl mx-auto text-center space-y-8">
-                            <span className="text-xs font-bold uppercase tracking-[0.3em] text-primary">
-                                {section.heading}
-                            </span>
-                            <h2 className="text-display-md md:text-display-lg lg:text-display-xl tracking-tighter">
-                                {section.subheading}
-                            </h2>
-                            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                                {section.description}
-                            </p>
+                <section className="relative py-8 md:py-28 overflow-hidden bg-background hidden md:block">
+                    {/* Decorative gradient orbs */}
+                    <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[100px] pointer-events-none" />
+                    <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-secondary blur-[80px] pointer-events-none" />
+
+                    <div className="container relative z-10">
+                        <div className="max-w-4xl mx-auto text-center space-y-6">
+                            {section.heading && (
+                                <span className="inline-block text-xs font-bold uppercase tracking-[0.4em] text-primary border border-primary/20 rounded-full px-5 py-2 bg-primary/5">
+                                    {section.heading}
+                                </span>
+                            )}
+                            {section.subheading && (
+                                <h2 className="text-display-md md:text-display-lg lg:text-display-xl tracking-tighter leading-[1.05]">
+                                    {section.subheading}
+                                </h2>
+                            )}
+                            {section.description && (
+                                <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+                                    {section.description}
+                                </p>
+                            )}
                         </div>
                     </div>
                 </section>
@@ -67,7 +78,7 @@ export async function SectionRenderer({ section }: Props) {
 
         case 'LOOKBOOK':
             return (
-                <section className="py-20 md:py-32">
+                <section className="py-8 md:py-32">
                     <div className="container">
                         <SectionHeader
                             title={section.title}
@@ -97,12 +108,13 @@ export async function SectionRenderer({ section }: Props) {
 
         case 'MARQUEE':
             return (
-                <section className="py-12 border-y border-border overflow-hidden bg-background">
-                    <div className="flex animate-marquee whitespace-nowrap">
-                        {Array(8).fill(null).map((_, i) => (
+                <section className="py-10 border-y border-border overflow-hidden bg-background">
+                    <div className="flex animate-marquee whitespace-nowrap" style={{ width: 'max-content' }}>
+                        {/* Duplicate for seamless loop */}
+                        {Array(16).fill(null).map((_, i) => (
                             <span
                                 key={i}
-                                className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-foreground/5 mx-12 italic"
+                                className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-foreground/10 mx-10 select-none"
                             >
                                 {section.text}
                             </span>
@@ -110,6 +122,9 @@ export async function SectionRenderer({ section }: Props) {
                     </div>
                 </section>
             );
+
+        case 'TRUST_BADGES':
+            return <TrustBadges />;
 
         default:
             return null;

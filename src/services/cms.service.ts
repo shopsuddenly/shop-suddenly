@@ -35,6 +35,11 @@ export const DEFAULT_HOMEPAGE_SECTIONS: PageSection[] = [
         isEnabled: true
     },
     {
+        id: 'trust-badges-1',
+        type: 'TRUST_BADGES',
+        isEnabled: true
+    },
+    {
         id: 'slider-new',
         type: 'PRODUCT_SLIDER',
         isEnabled: true,
@@ -120,7 +125,10 @@ export const DEFAULT_FOOTER_CONFIG: FooterConfig = {
     brandColumn: {
         heading: "Suddenly",
         description: "",
-        socials: []
+        socials: [
+            { platform: 'instagram', url: 'https://www.instagram.com/shop_suddenly?igsh=MXRiZ3lpcDlucHo5dA==' },
+            { platform: 'facebook', url: 'https://www.facebook.com/share/1UdgFVjh26/?mibextid=wwXIfr' }
+        ]
     },
     linkColumns: [
         {

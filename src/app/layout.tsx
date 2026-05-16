@@ -12,6 +12,7 @@ import { ErrorDialog } from "@/components/ui/error-dialog";
 import { NotificationProvider } from "@/components/providers/NotificationProvider";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { MobileNavigation } from "@/components/layout/MobileNavigation";
+import { ScrollToTop } from "@/components/common/ScrollToTop";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -103,12 +104,12 @@ export default function RootLayout({
     logo: `${baseUrl}/icon.png`,
     sameAs: [
       'https://twitter.com/suddenly',
-      'https://instagram.com/suddenly',
-      'https://facebook.com/suddenly'
+      'https://www.instagram.com/shop_suddenly?igsh=MXRiZ3lpcDlucHo5dA==',
+      'https://www.facebook.com/share/1UdgFVjh26/?mibextid=wwXIfr'
     ],
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+91-9876543210',
+      telephone: '+91-8146299924',
       contactType: 'customer service',
       areaServed: 'IN',
       availableLanguage: 'en'
@@ -139,25 +140,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var localTheme = localStorage.getItem('theme');
-                  var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  if (localTheme === 'dark' || (!localTheme && supportDarkMode)) {
-                    document.documentElement.classList.add('dark');
-                    document.documentElement.classList.remove('light');
-                  } else {
-                    document.documentElement.classList.add('light');
-                    document.documentElement.classList.remove('dark');
-                  }
-                } catch (e) {}
-              })()
-            `,
-          }}
-        />
+
         {process.env.NODE_ENV === 'production' && (
           <script
             dangerouslySetInnerHTML={{
@@ -186,23 +169,25 @@ export default function RootLayout({
       </head>
       <body
         className={`${inter.variable} ${outfit.variable} font-sans antialiased`}
+        suppressHydrationWarning
       >
         <ThemeProvider>
           <AuthProvider>
             <WishlistProvider>
               <NotificationProvider>
                 <CartSyncProvider />
-                <div className="flex min-h-screen flex-col">
-                  <Navbar />
-                  <main className="flex-1 pb-24 lg:pb-0">
-                    {children}
-                  </main>
-                  <Footer />
-                  <MobileNavigation />
-                  <Toaster />
-                  <ErrorDialog />
-                  <ChatWidget />
-                </div>
+                  <div className="flex min-h-screen flex-col">
+                    <Navbar />
+                    <main className="flex-1 pb-16 lg:pb-0">
+                      {children}
+                    </main>
+                    <Footer />
+                    <MobileNavigation />
+                    <ScrollToTop />
+                    <Toaster />
+                    <ErrorDialog />
+                    <ChatWidget />
+                  </div>
               </NotificationProvider>
             </WishlistProvider>
           </AuthProvider>

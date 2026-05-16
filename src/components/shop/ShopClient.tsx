@@ -83,25 +83,30 @@ export function ShopClient({ initialProducts, categories }: ShopClientProps) {
     };
 
     return (
-        <div className="min-h-screen bg-background pb-20">
+        <div className="min-h-screen bg-background pb-8 md:pb-20">
             {/* Header */}
-            <section className="pt-32 pb-12 bg-background">
-                <div className="luxury-container">
-                    <h1 className="font-serif text-4xl md:text-6xl text-foreground mb-4">
-                        {searchQuery ? `Search: "${searchQuery}"` : "Shop All"}
-                    </h1>
-                    <p className="text-muted-foreground font-sans">
-                        {totalCount} products found
-                    </p>
+            <section className="pt-16 md:pt-20 pb-6 md:pb-10 bg-gradient-to-b from-secondary/40 to-background border-b border-border/50">
+                <div className="container">
+                    <div className="space-y-2">
+                        <span className="text-xs font-bold uppercase tracking-[0.3em] text-primary">
+                            {searchQuery ? "Search Results" : "The Collection"}
+                        </span>
+                        <h1 className="text-display-sm md:text-display-md tracking-tighter font-bold">
+                            {searchQuery ? `"${searchQuery}"` : "Shop All"}
+                        </h1>
+                        <p className="text-muted-foreground text-sm">
+                            {totalCount} product{totalCount !== 1 ? "s" : ""} found
+                        </p>
+                    </div>
                 </div>
             </section>
 
             {/* Filter Bar */}
-            <section className="sticky top-20 z-30 bg-background/95 backdrop-blur-md border-y border-border py-4">
-                <div className="luxury-container">
+            <section className="sticky top-[calc(var(--navbar-height,64px))] z-30 bg-background/95 backdrop-blur-md border-b border-border py-3">
+                <div className="container">
                     <div className="flex items-center justify-between gap-4">
                         {/* Category Pills - Desktop (Quick Filters) */}
-                        <div className="hidden lg:flex items-center gap-2 overflow-x-auto">
+                        <div className="hidden lg:flex items-center gap-2 overflow-x-auto no-scrollbar">
                             <TagPill
                                 active={filters.category === "All"}
                                 onClick={() => handleCategoryChange("All")}
@@ -123,7 +128,7 @@ export function ShopClient({ initialProducts, categories }: ShopClientProps) {
                         <Button
                             variant="ghost"
                             onClick={() => setIsFilterOpen(true)}
-                            className="lg:hidden flex items-center gap-2 text-sm font-sans uppercase tracking-luxury text-muted-foreground hover:text-foreground"
+                            className="lg:hidden flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground"
                         >
                             <SlidersHorizontal className="w-4 h-4" />
                             Filters
@@ -133,13 +138,13 @@ export function ShopClient({ initialProducts, categories }: ShopClientProps) {
                         <div className="relative ml-auto">
                             <button
                                 onClick={() => setIsSortOpen(!isSortOpen)}
-                                className="flex items-center gap-2 text-sm font-sans uppercase tracking-luxury text-muted-foreground hover:text-foreground transition-colors"
+                                className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 Sort: {sortOption}
                                 <ChevronDown className={cn("w-4 h-4 transition-transform", isSortOpen && "rotate-180")} />
                             </button>
                             {isSortOpen && (
-                                <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border p-2 animate-fade-in z-40 shadow-lg rounded-md">
+                                <div className="absolute right-0 top-full mt-2 w-52 bg-card border border-border p-2 animate-fade-in z-40 shadow-lg rounded-xl">
                                     {sortOptions.map((option) => (
                                         <button
                                             key={option}
@@ -148,7 +153,7 @@ export function ShopClient({ initialProducts, categories }: ShopClientProps) {
                                                 setIsSortOpen(false);
                                             }}
                                             className={cn(
-                                                "w-full text-left px-4 py-2 text-sm font-sans transition-colors rounded-sm",
+                                                "w-full text-left px-4 py-2.5 text-sm font-medium transition-colors rounded-lg",
                                                 sortOption === option
                                                     ? "text-foreground bg-secondary"
                                                     : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
@@ -164,17 +169,17 @@ export function ShopClient({ initialProducts, categories }: ShopClientProps) {
                 </div>
             </section>
 
-            <div className="luxury-container pt-8">
+            <div className="container pt-8">
                 <div className="flex flex-col lg:flex-row gap-12">
                     {/* Desktop Sidebar */}
                     <aside className="hidden lg:block w-64 flex-shrink-0">
                         <div className="sticky top-40">
                             <div className="mb-6 flex items-center justify-between">
-                                <h3 className="font-serif text-xl">Filters</h3>
+                                <h3 className="font-bold text-lg tracking-tight">Filters</h3>
                                 {(filters.brands.length > 0 || filters.category !== "All" || filters.priceRange[0] > 0 || filters.rating) && (
                                     <button
                                         onClick={() => setFilters({ category: "All", brands: [], priceRange: [facets.minPrice, facets.maxPrice], rating: null, attributes: {} })}
-                                        className="text-xs text-muted-foreground hover:text-foreground underline"
+                                        className="text-xs text-muted-foreground hover:text-primary underline transition-colors"
                                     >
                                         Reset
                                     </button>

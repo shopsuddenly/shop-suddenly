@@ -43,6 +43,7 @@ export function WishlistButton({ product, className, variant = 'icon' }: Wishlis
     return (
         <button
             onClick={toggleWishlist}
+            suppressHydrationWarning
             className={cn(
                 "p-2 rounded-full transition-all duration-200 hover:scale-110 active:scale-95",
                 saved ? "text-red-500 hover:bg-red-50" : "text-slate-400 hover:text-slate-600 hover:bg-slate-100",

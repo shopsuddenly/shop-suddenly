@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Instagram, Twitter, Facebook, Youtube, ArrowRight, Loader2 } from "lucide-react";
+import { Instagram, Twitter, Facebook, Youtube, ArrowRight, Loader2, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CMSService, DEFAULT_FOOTER_CONFIG } from "@/services/cms.service";
@@ -65,8 +65,8 @@ export function Footer() {
 
   return (
     <footer className="bg-secondary/30 border-t border-border mt-auto">
-      <div className="container py-16 md:py-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+      <div className="container pt-8 pb-16 md:py-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-12 lg:gap-8">
           {/* Brand & Newsletter */}
           <div className="space-y-8 lg:col-span-1">
             <Link href="/" className="inline-block">
@@ -81,6 +81,7 @@ export function Footer() {
               </p>
               <form onSubmit={handleSubmit} className="flex space-x-2">
                 <Input 
+                    suppressHydrationWarning
                     placeholder="Your email" 
                     className="bg-background h-12 rounded-xl border-border/50 focus:ring-primary" 
                     value={email}
@@ -94,10 +95,10 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Dynamic Link Columns */}
+          {/* Dynamic Link Columns - hidden on mobile if empty */}
           {config.linkColumns?.map((col) => (
-            <div key={col.id}>
-              <h4 className="font-bold text-xs uppercase tracking-[0.2em] mb-8 text-foreground">{col.title}</h4>
+            <div key={col.id} className={!col.links?.length ? "hidden md:block" : ""}>
+              <h4 className="font-bold text-xs uppercase tracking-[0.2em] mb-6 text-foreground">{col.title}</h4>
               <ul className="space-y-4 text-sm text-muted-foreground">
                 {col.links?.map((link, idx) => (
                   <li key={idx}>
@@ -129,9 +130,18 @@ export function Footer() {
               )}
             </div>
             
-            <div className="p-4 rounded-2xl bg-secondary/50 border border-border/50">
+            <div className="p-4 rounded-2xl bg-secondary/50 border border-border/50 space-y-3">
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Customer Support</p>
-                <p className="text-sm font-medium">support@suddenly.com</p>
+                <div className="space-y-1.5">
+                    <p className="text-sm font-medium flex items-center gap-2">
+                        <ArrowRight className="w-3 h-3 text-primary" />
+                        support@suddenly.com
+                    </p>
+                    <p className="text-sm font-medium flex items-center gap-2">
+                        <Phone className="w-3 h-3 text-primary" />
+                        +91 81462 99924
+                    </p>
+                </div>
             </div>
           </div>
         </div>

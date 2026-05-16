@@ -17,7 +17,7 @@ interface CategoryStripProps {
 
 export function CategoryStrip({ categories = [] }: CategoryStripProps) {
   return (
-    <section className="py-20 md:py-32 bg-background overflow-hidden">
+    <section className="pt-10 pb-16 md:py-32 bg-background overflow-hidden">
       <div className="container">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <div className="space-y-4">
@@ -29,12 +29,12 @@ export function CategoryStrip({ categories = [] }: CategoryStripProps) {
             </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
           {categories.slice(0, 4).map((category, index) => (
             <Link
               key={category.name}
               href={category.link}
-              className="group relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-secondary"
+              className="group relative aspect-[4/5] overflow-hidden bg-secondary rounded-3xl"
             >
               {category.image && (
                 <Image

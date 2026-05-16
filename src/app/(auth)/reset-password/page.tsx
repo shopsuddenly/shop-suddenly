@@ -35,7 +35,7 @@ export default function ResetPasswordPage() {
 
     if (isSubmitted) {
         return (
-            <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="min-h-[80vh] flex flex-col items-center justify-center p-4 py-12 md:py-20">
                 <div className="w-full max-w-md text-center animate-fade-in">
                     <div className="bg-card border border-border p-8 md:p-12">
                         <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -64,10 +64,6 @@ export default function ResetPasswordPage() {
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-md">
-                {/* Logo */}
-                <Link href="/" className="block text-center mb-12">
-                    <span className="font-serif text-3xl text-foreground">Suddenly</span>
-                </Link>
 
                 {/* Card */}
                 <div className="bg-card border border-border p-8 md:p-12">

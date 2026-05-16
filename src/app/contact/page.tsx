@@ -103,7 +103,7 @@ export default function ContactPage() {
                                         <div>
                                             <h3 className="font-serif text-lg mb-1">Email Us</h3>
                                             <p className="text-sm text-muted-foreground font-sans">
-                                                concierge@suddenly.com
+                                                support@suddenly.com
                                             </p>
                                         </div>
                                     </div>
@@ -115,8 +115,8 @@ export default function ContactPage() {
                                         <div>
                                             <h3 className="font-serif text-lg mb-1">Call Us</h3>
                                             <p className="text-sm text-muted-foreground font-sans">
-                                                +1 (800) 123-4567<br />
-                                                Mon-Fri, 9am - 6pm EST
+                                                +91 81462 99924<br />
+                                                Mon-Sat, 10am - 7pm IST
                                             </p>
                                         </div>
                                     </div>
