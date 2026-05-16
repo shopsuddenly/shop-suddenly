@@ -3,6 +3,7 @@ const withPWA = require('next-pwa');
 
 const nextConfig: NextConfig = {
   images: {
+    unoptimized: true,
     dangerouslyAllowSVG: true,
     remotePatterns: [
       {
@@ -13,7 +14,7 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "suddenly-351d3.firebasestorage.app",
       },
-       {
+      {
         protocol: "https",
         hostname: "ecomamit-dfd2f.firebasestorage.app",
       },
