@@ -42,24 +42,39 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const [pincode, setPincode] = useState("");
-    const [deliveryInfo, setDeliveryInfo] = useState<{ date: string; cod: boolean } | null>(null);
+    const [deliveryInfo, setDeliveryInfo] = useState<{ date: string; cod: boolean; city?: string } | null>(null);
     const [isChecking, setIsChecking] = useState(false);
 
-    const handleCheckDelivery = () => {
-        if (!pincode || pincode.length < 5) {
-            toast.error("Please enter a valid pincode or city");
+    const handleCheckDelivery = async () => {
+        if (!pincode || pincode.length < 6) {
+            toast.error("Please enter a valid 6-digit pincode");
             return;
         }
         setIsChecking(true);
-        // Simulate API check
-        setTimeout(() => {
+        try {
+            const res = await fetch(`/api/check-pincode?pincode=${pincode}`);
+            const data = await res.json();
+
+            if (data.serviceable) {
+                const today = new Date();
+                const deliveryDate = new Date(today);
+                deliveryDate.setDate(today.getDate() + 4); 
+
+                setDeliveryInfo({
+                    date: `By ${deliveryDate.toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' })}`,
+                    cod: data.cod,
+                    city: data.city
+                });
+                toast.success(`Serviceable in ${data.district}, ${data.state}`);
+            } else {
+                setDeliveryInfo(null);
+                toast.error("Sorry, this location is not serviceable.");
+            }
+        } catch (error) {
+            toast.error("Could not check availability. Please try again.");
+        } finally {
             setIsChecking(false);
-            setDeliveryInfo({
-                date: "By Tue, May 19",
-                cod: true
-            });
-            toast.success("Delivery available to " + pincode);
-        }, 1500);
+        }
     };
 
     const handleUseMyLocation = () => {
@@ -488,7 +503,7 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                                     <div className="flex items-start gap-3 p-3 bg-green-500/5 rounded-md border border-green-500/20 animate-in fade-in slide-in-from-top-1">
                                         <Truck className="w-4 h-4 text-green-600 mt-0.5" />
                                         <div className="space-y-0.5">
-                                            <p className="text-[10px] font-sans font-bold uppercase tracking-wider text-green-700">Delivery Available</p>
+                                            <p className="text-[10px] font-sans font-bold uppercase tracking-wider text-green-700">Delivery Available to {deliveryInfo.city}</p>
                                             <p className="text-[10px] font-sans text-green-600/80">Get it {deliveryInfo.date}. {deliveryInfo.cod && "COD Available."}</p>
                                         </div>
                                     </div>
